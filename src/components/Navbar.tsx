@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Compass, Sparkles } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onOpenGateway: () => void;
+  hasActiveSimulation?: boolean;
+  onResumeSimulation?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenGateway }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onOpenGateway,
+  hasActiveSimulation = false,
+  onResumeSimulation,
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -28,99 +34,117 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGateway }) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 transition-colors duration-200 ${
         isScrolled
-          ? 'bg-[#080910]/85 backdrop-blur-md border-b border-[#A78BFA]/15 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
-          : 'bg-transparent py-5'
+          ? 'bg-[#080910]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-[0_2px_15px_rgba(0,0,0,0.6)]'
+          : 'bg-[#080910]/60 backdrop-blur-sm border-b border-white/5 py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Brand Logo & Name */}
+        <div className="flex items-center justify-between h-8">
+          {/* Minimal Orbital Brand Mark */}
           <a
             href="#"
-            className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-[#A78BFA]/50 rounded-lg p-1"
-            aria-label="THE OTHER SIDE Homepage"
+            className="flex items-center gap-3 group focus:outline-none focus:ring-1 focus:ring-white/30 rounded-md p-1 transition-opacity hover:opacity-90 active:scale-[0.99]"
+            aria-label="THE OTHER CHOICE Homepage"
           >
-            {/* Minimal Orbital Logo */}
-            <div className="relative w-8 h-8 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border border-[#77D9F7]/40 animate-spin-slow group-hover:border-[#77D9F7] transition-colors" />
-              <div className="absolute inset-0.5 rounded-full border border-[#F4B978]/40 animate-spin-reverse group-hover:border-[#F4B978] transition-colors" />
-              <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-[#77D9F7] via-[#A78BFA] to-[#F4B978] shadow-[0_0_10px_#A78BFA]" />
+            <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
+              <div className="absolute inset-0 rounded-full border border-[#77D9F7]/70 animate-spin-slow" />
+              <div className="absolute inset-0.5 rounded-full border border-[#F4B978]/70 animate-spin-reverse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#F5F3FF]" />
             </div>
 
-            <span className="font-heading font-bold text-lg sm:text-xl tracking-wider text-[#F5F3FF] group-hover:text-[#A78BFA] transition-colors">
-              THE OTHER SIDE
+            <span className="font-heading font-bold text-base sm:text-lg tracking-wider text-[#F5F3FF]">
+              THE OTHER CHOICE
             </span>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8" aria-label="Main Navigation">
+          <nav
+            className="hidden md:flex items-center gap-6 text-xs font-mono uppercase tracking-wider text-[#9292A5]"
+            aria-label="Main Navigation"
+          >
             <button
               onClick={() => scrollToSection('how-it-works')}
-              className="text-sm font-medium text-[#9292A5] hover:text-[#F5F3FF] transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-[#A78BFA] rounded px-2 py-1"
+              className="py-1 px-2 rounded-md hover:text-[#F5F3FF] active:text-white transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/20"
             >
-              <Compass className="w-4 h-4 text-[#77D9F7]" />
               Experience
             </button>
             <button
               onClick={() => scrollToSection('about')}
-              className="text-sm font-medium text-[#9292A5] hover:text-[#F5F3FF] transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-[#A78BFA] rounded px-2 py-1"
+              className="py-1 px-2 rounded-md hover:text-[#F5F3FF] active:text-white transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/20"
             >
               About
             </button>
           </nav>
 
-          {/* Action Button */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Action Buttons */}
+          <div className="hidden md:flex items-center gap-3 font-mono text-xs">
+            {hasActiveSimulation && onResumeSimulation && (
+              <button
+                onClick={onResumeSimulation}
+                className="px-3.5 py-2 rounded-lg text-[#77D9F7] bg-[#77D9F7]/10 hover:bg-[#77D9F7]/20 active:bg-[#77D9F7]/25 border border-[#77D9F7]/30 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#77D9F7]"
+              >
+                Resume Simulation
+              </button>
+            )}
+
             <button
               onClick={onOpenGateway}
-              className="relative group overflow-hidden px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider text-[#080910] bg-[#F5F3FF] hover:bg-gradient-to-r hover:from-[#77D9F7] hover:via-[#A78BFA] hover:to-[#F4B978] hover:text-[#080910] transition-all duration-300 shadow-[0_0_20px_rgba(167,139,250,0.3)] hover:shadow-[0_0_25px_rgba(167,139,250,0.6)] focus:outline-none focus:ring-2 focus:ring-[#A78BFA]"
+              className="px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-[#080910] bg-[#F5F3FF] hover:bg-white active:bg-[#E5E5F0] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#080910]"
             >
-              <span className="relative z-10 flex items-center gap-2 font-heading">
-                <Sparkles className="w-3.5 h-3.5 text-[#080910]" />
-                Enter Reality
-              </span>
+              Enter Reality
             </button>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Toggle */}
           <div className="flex md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-[#9292A5] hover:text-[#F5F3FF] hover:bg-[#11121C] focus:outline-none focus:ring-2 focus:ring-[#A78BFA]"
+              className="p-1.5 rounded-lg text-[#9292A5] hover:text-[#F5F3FF] active:scale-95 transition-all focus:outline-none focus:ring-1 focus:ring-white/30"
               aria-label={isMobileMenuOpen ? 'Close Menu' : 'Open Menu'}
               aria-expanded={isMobileMenuOpen}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 rounded-2xl bg-[#11121C]/95 backdrop-blur-xl border border-[#A78BFA]/20 shadow-2xl flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden mt-3 p-4 rounded-xl bg-[#11121C] border border-white/10 shadow-2xl flex flex-col gap-2 font-mono text-xs uppercase tracking-wider animate-in fade-in slide-in-from-top-1 duration-150">
             <button
               onClick={() => scrollToSection('how-it-works')}
-              className="flex items-center gap-2.5 text-left text-base font-medium text-[#F5F3FF] hover:text-[#77D9F7] py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+              className="text-left py-2.5 px-3 rounded-lg text-[#9292A5] hover:text-[#F5F3FF] hover:bg-white/5 active:bg-white/10 transition-colors"
             >
-              <Compass className="w-4 h-4 text-[#77D9F7]" />
               Experience
             </button>
             <button
               onClick={() => scrollToSection('about')}
-              className="text-left text-base font-medium text-[#F5F3FF] hover:text-[#A78BFA] py-2 px-3 rounded-lg hover:bg-white/5 transition-colors"
+              className="text-left py-2.5 px-3 rounded-lg text-[#9292A5] hover:text-[#F5F3FF] hover:bg-white/5 active:bg-white/10 transition-colors"
             >
               About
             </button>
+
+            {hasActiveSimulation && onResumeSimulation && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onResumeSimulation();
+                }}
+                className="w-full py-2.5 px-3 rounded-lg text-center text-[#77D9F7] bg-[#77D9F7]/10 active:bg-[#77D9F7]/20 border border-[#77D9F7]/30"
+              >
+                Resume Simulation
+              </button>
+            )}
+
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
                 onOpenGateway();
               }}
-              className="w-full mt-2 py-3 px-4 rounded-xl text-center text-sm font-semibold uppercase tracking-wider text-[#080910] bg-gradient-to-r from-[#77D9F7] via-[#A78BFA] to-[#F4B978] shadow-[0_0_15px_rgba(167,139,250,0.4)] flex items-center justify-center gap-2"
+              className="w-full mt-1 py-3 px-4 rounded-lg text-center font-bold text-[#080910] bg-[#F5F3FF] hover:bg-white active:bg-[#E5E5F0]"
             >
-              <Sparkles className="w-4 h-4 text-[#080910]" />
               Enter Reality
             </button>
           </div>

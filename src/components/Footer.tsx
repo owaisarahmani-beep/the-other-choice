@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
                 <div className="w-2 h-2 rounded-full bg-[#A78BFA]" />
               </div>
               <span className="font-heading font-bold text-lg tracking-wider text-[#F5F3FF]">
-                THE OTHER SIDE
+                THE OTHER CHOICE
               </span>
             </div>
 
@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
             </a>
             <button
               onClick={scrollToTop}
-              className="p-2 rounded-xl bg-[#11121C] border border-[#A78BFA]/20 text-[#9292A5] hover:text-[#F5F3FF] hover:border-[#A78BFA]/40 transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#A78BFA]"
+              className="p-2 rounded-xl bg-[#11121C] border border-[#A78BFA]/20 text-[#9292A5] hover:text-[#F5F3FF] hover:border-[#A78BFA]/40 transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#A78BFA] cursor-pointer"
               aria-label="Back to top"
             >
               <ArrowUp className="w-4 h-4" />
@@ -59,11 +59,11 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#9292A5]">
           <div>
-            &copy; 2026 THE OTHER SIDE. All rights reserved.
+            &copy; 2026 THE OTHER CHOICE. All rights reserved.
           </div>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#77D9F7]" />
-            <span>DAY 1 FOUNDATION // READY FOR DAY 2 EXPANSION</span>
+            <span>DAY 2 // PARALLEL LIFE TIMELINES ACTIVATED</span>
           </div>
         </div>
       </div>

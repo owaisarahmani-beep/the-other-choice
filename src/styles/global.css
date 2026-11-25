@@ -3,10 +3,8 @@
 @theme {
   --color-cosmic-bg: #080910;
   --color-cosmic-surface: #11121C;
-  --color-cosmic-surface-glass: rgba(17, 18, 28, 0.65);
-  --color-cosmic-card: #151624;
-  --color-cosmic-border: rgba(167, 139, 250, 0.15);
-  --color-cosmic-border-hover: rgba(167, 139, 250, 0.35);
+  --color-cosmic-surface-subtle: #161724;
+  --color-cosmic-surface-hover: #1c1d2e;
   
   --color-accent-primary: #A78BFA;
   --color-accent-secondary: #77D9F7;
@@ -14,9 +12,11 @@
   
   --color-text-main: #F5F3FF;
   --color-text-muted: #9292A5;
+  --color-text-dim: #606075;
 
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
 :root {
@@ -28,39 +28,32 @@ body {
   color: #F5F3FF;
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.03em;
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(17, 18, 28, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(167, 139, 250, 0.14);
+/* Subtle architectural surface styling - matte and restrained */
+.editorial-surface {
+  background-color: #11121C;
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.glass-panel-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.editorial-surface-interactive {
+  background-color: #11121C;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.glass-panel-hover:hover {
-  border-color: rgba(167, 139, 250, 0.35);
-  box-shadow: 0 0 30px -8px rgba(167, 139, 250, 0.18);
-  transform: translateY(-2px);
+.editorial-surface-interactive:hover {
+  background-color: #141522;
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* Subtle background stars and ambient gradients */
-.cosmic-radial-bg {
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(167, 139, 250, 0.15), transparent 70%),
-    radial-gradient(circle 600px at 15% 40%, rgba(119, 217, 247, 0.07), transparent 60%),
-    radial-gradient(circle 600px at 85% 60%, rgba(244, 185, 120, 0.06), transparent 60%);
-}
-
-/* Keyframes for subtle portal and orbital animations */
+/* Keyframes for orbital rotations */
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);
@@ -79,30 +72,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
 }
 
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.04);
-  }
-}
-
 .animate-spin-slow {
-  animation: spin-slow 35s linear infinite;
+  animation: spin-slow 40s linear infinite;
 }
 
 .animate-spin-reverse {
-  animation: spin-reverse-slow 45s linear infinite;
+  animation: spin-reverse-slow 50s linear infinite;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 8s ease-in-out infinite;
-}
-
-/* Accessibility: respect user prefers-reduced-motion */
+/* Respect user prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -112,17 +90,16 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
 }
 
-/* Custom subtle scrollbar */
+/* Restrained scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
   background: #080910;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2033;
-  border-radius: 3px;
+  background: #1c1d2e;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #343654;
+  background: #2a2b42;
 }

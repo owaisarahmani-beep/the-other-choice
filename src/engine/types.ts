@@ -1,6 +1,6 @@
 /**
- * THE OTHER SIDE — Local Scenario Engine Foundation
- * Core TypeScript definitions for multiverse life simulation
+ * THE OTHER CHOICE — Local Scenario Engine Foundation
+ * Core TypeScript definitions for multiverse life simulation & onboarding
  */
 
 export type RealityType = 'reality-a' | 'reality-b' | 'divergence-point';
@@ -12,7 +12,16 @@ export type EventCategory =
   | 'discovery' 
   | 'creative' 
   | 'existential' 
+  | 'relocation'
   | 'crisis';
+
+export type LifeSituation =
+  | 'studying'
+  | 'working'
+  | 'building_business'
+  | 'exploring_opportunities'
+  | 'taking_a_break'
+  | 'other';
 
 export interface TimelineMetrics {
   fulfillment: number; // 0 - 100
@@ -29,6 +38,8 @@ export interface LifeEvent {
   realityType: RealityType;
   description: string;
   divergenceContext?: string;
+  parallelReflection?: string; // What happened in the other reality at this age
+  isMajor?: boolean;           // Significant turning point vs ordinary progression
   metrics?: Partial<TimelineMetrics>;
 }
 
@@ -47,9 +58,28 @@ export interface LifeTimeline {
   realityId: 'reality-a' | 'reality-b';
   name: string;
   theme: string;
-  colorAccent: string; // Hex color: cool blue (#77D9F7) or warm amber (#F4B978)
+  colorAccent: string; // Cool blue (#77D9F7) or Warm amber (#F4B978)
   events: LifeEvent[];
   overallMetrics: TimelineMetrics;
+}
+
+export interface OnboardingData {
+  displayName: string;
+  currentAge: number;
+  lifeSituation: LifeSituation;
+  customSituation?: string;
+  decisionPrompt: string;       // e.g. "What if I moved to another city?"
+  alternateDirection: string;   // e.g. "Relocated to Berlin to build spatial audio tools"
+}
+
+export interface SimulationResult {
+  id: string;
+  user: OnboardingData;
+  realityA: LifeTimeline;
+  realityB: LifeTimeline;
+  createdAt: string;
+  version: string;
+  disclaimer: string;
 }
 
 export interface Simulation {

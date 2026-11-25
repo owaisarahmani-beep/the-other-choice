@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <radialGradient id="singularity" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#77D9F7" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#080910" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="orbitA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#77D9F7"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="orbitB" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F4B978"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <rect width="64" height="64" rx="16" fill="#080910"/>
+  <!-- Singularity core glow -->
+  <circle cx="32" cy="32" r="20" fill="url(#singularity)"/>
+  <!-- Orbital Ring Reality A (cool blue) -->
+  <ellipse cx="32" cy="32" rx="22" ry="10" transform="rotate(-30 32 32)" stroke="url(#orbitA)" stroke-width="1.8" stroke-dasharray="3 2" opacity="0.85"/>
+  <!-- Orbital Ring Reality B (warm amber) -->
+  <ellipse cx="32" cy="32" rx="22" ry="10" transform="rotate(45 32 32)" stroke="url(#orbitB)" stroke-width="1.8" opacity="0.85"/>
+  <!-- Reality nodes -->
+  <circle cx="15" cy="22" r="3" fill="#77D9F7" filter="drop-shadow(0 0 4px #77D9F7)"/>
+  <circle cx="48" cy="44" r="3" fill="#F4B978" filter="drop-shadow(0 0 4px #F4B978)"/>
+  <!-- Center Core -->
+  <circle cx="32" cy="32" r="4" fill="#F5F3FF" filter="drop-shadow(0 0 6px #A78BFA)"/>
+</svg>

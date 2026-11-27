@@ -1,6 +1,6 @@
 /**
- * THE OTHER CHOICE — Local Scenario Engine Foundation
- * Core TypeScript definitions for multiverse life simulation & onboarding
+ * THE OTHER CHOICE — Multiverse Branching Engine Foundation
+ * Core TypeScript definitions for multiverse life simulation, onboarding & branching
  */
 
 export type RealityType = 'reality-a' | 'reality-b' | 'divergence-point';
@@ -30,6 +30,23 @@ export interface TimelineMetrics {
   connection: number;  // 0 - 100
 }
 
+export interface BranchDecision {
+  id: string;
+  title: string;
+  description: string;
+  consequences: string;
+  category: EventCategory;
+  projectedShift: string;
+}
+
+export interface BranchDecisionPoint {
+  eventId: string;
+  age: number;
+  situationContext: string;
+  promptQuestion: string;
+  options: BranchDecision[];
+}
+
 export interface LifeEvent {
   id: string;
   title: string;
@@ -40,6 +57,8 @@ export interface LifeEvent {
   divergenceContext?: string;
   parallelReflection?: string; // What happened in the other reality at this age
   isMajor?: boolean;           // Significant turning point vs ordinary progression
+  branchDecisionPoint?: BranchDecisionPoint; // If this event has a second choice available
+  originBranchId?: string;     // Which branch produced this event
   metrics?: Partial<TimelineMetrics>;
 }
 
@@ -63,6 +82,22 @@ export interface LifeTimeline {
   overallMetrics: TimelineMetrics;
 }
 
+export interface TimelineBranch {
+  id: string; // Unique stable branch identifier e.g. "root-b" or "branch-evt-b-25-rebuild"
+  name: string; // e.g. "Branch B.1 // Rebuild the Startup"
+  shortLabel: string; // e.g. "B.1" or "Rebuild"
+  theme: string;
+  colorAccent: string; // Warm amber variation e.g. "#F4B978" / "#E8A25D"
+  parentBranchId: string | null; // null for root Reality B
+  parentEventId: string | null; // Event from which divergence occurred
+  branchCreationAge: number; // Age at which divergence occurred
+  decisionPrompt?: string; // The crossroads question that spurred the branch
+  chosenDecision?: BranchDecision; // The specific choice taken
+  ancestorBranchIds: string[]; // Chain of parent branches: ["root-b", ...]
+  events: LifeEvent[]; // All events up to branch point + new continuation
+  createdAt: string;
+}
+
 export interface OnboardingData {
   displayName: string;
   currentAge: number;
@@ -76,7 +111,9 @@ export interface SimulationResult {
   id: string;
   user: OnboardingData;
   realityA: LifeTimeline;
-  realityB: LifeTimeline;
+  realityB: LifeTimeline; // The root alternate Reality B
+  branches: Record<string, TimelineBranch>; // Dictionary of all branches by branchId
+  activeBranchId: string; // Currently active branch displayed in timeline
   createdAt: string;
   version: string;
   disclaimer: string;

@@ -1,23 +1,80 @@
-import React, { useState } from 'react';
-import { SimulationResult, LifeEvent } from '../../engine/types';
+import React, { useState, useEffect } from 'react';
+import { SimulationResult, LifeEvent, LifeTimeline, BranchDecision } from '../../engine/types';
 import { ParallelTimeline } from '../timeline/ParallelTimeline';
 import { EventDetailDrawer } from '../timeline/EventDetailDrawer';
-import { ArrowLeft, RefreshCw, GitFork } from 'lucide-react';
+import { BranchLineageBar } from '../timeline/BranchLineageBar';
+import { SecondChoiceModal } from '../timeline/SecondChoiceModal';
+import { ArrowLeft, RefreshCw, GitFork, Sparkles } from 'lucide-react';
 import { SITUATION_LABELS } from '../../engine/generator';
+import { createBranch, switchActiveBranch } from '../../engine/branchEngine';
+import { saveSimulation } from '../../utils/storage';
 
 interface SimulationViewProps {
   simulation: SimulationResult;
   onNewSimulation: () => void;
   onExit: () => void;
+  onSimulationUpdate?: (updated: SimulationResult) => void;
 }
 
 export const SimulationView: React.FC<SimulationViewProps> = ({
-  simulation,
+  simulation: initialSimulation,
   onNewSimulation,
   onExit,
+  onSimulationUpdate,
 }) => {
+  const [currentSim, setCurrentSim] = useState<SimulationResult>(initialSimulation);
   const [selectedEvent, setSelectedEvent] = useState<LifeEvent | null>(null);
-  const { user, realityA, realityB } = simulation;
+  const [secondChoiceEvent, setSecondChoiceEvent] = useState<LifeEvent | null>(null);
+
+  // Sync state if initialSimulation prop changes from outside
+  useEffect(() => {
+    setCurrentSim(initialSimulation);
+  }, [initialSimulation]);
+
+  const { user, realityA } = currentSim;
+
+  // Resolve currently active branch
+  const activeBranchId = currentSim.activeBranchId || 'root-b';
+  const activeBranch =
+    currentSim.branches[activeBranchId] ||
+    currentSim.branches['root-b'] ||
+    Object.values(currentSim.branches)[0];
+
+  // Construct active timeline B for the parallel view
+  const activeTimelineB: LifeTimeline = {
+    id: activeBranch.id,
+    realityId: 'reality-b',
+    name: activeBranch.name,
+    theme: activeBranch.theme,
+    colorAccent: activeBranch.colorAccent,
+    events: activeBranch.events,
+    overallMetrics: currentSim.realityB.overallMetrics,
+  };
+
+  const handleSelectBranch = (branchId: string) => {
+    const updated = switchActiveBranch(currentSim, branchId);
+    setCurrentSim(updated);
+    saveSimulation(updated);
+    onSimulationUpdate?.(updated);
+  };
+
+  const handleConfirmBranch = (decision: BranchDecision) => {
+    if (!secondChoiceEvent) return;
+    const { simulation: updated } = createBranch({
+      simulation: currentSim,
+      parentBranchId: activeBranch.id,
+      parentEventId: secondChoiceEvent.id,
+      decision,
+    });
+    setCurrentSim(updated);
+    saveSimulation(updated);
+    onSimulationUpdate?.(updated);
+    setSecondChoiceEvent(null);
+  };
+
+  const handleOpenSecondChoice = (event: LifeEvent) => {
+    setSecondChoiceEvent(event);
+  };
 
   return (
     <div className="min-h-screen bg-[#080910] text-[#F5F3FF] selection:bg-[#A78BFA]/30 selection:text-[#F5F3FF] pb-24">
@@ -106,35 +163,55 @@ export const SimulationView: React.FC<SimulationViewProps> = ({
                 </div>
               </div>
 
-              {/* Reality B Summary */}
+              {/* Reality B / Active Branch Summary */}
               <div className="p-4 rounded-xl bg-[#0c0d16] border border-[#F4B978]/25 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[#F4B978] font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#F4B978]" />
-                  <span>Reality B // Alternate Horizon</span>
+                  <span>
+                    {activeBranch.shortLabel} // {activeBranch.chosenDecision?.title || 'Alternate Horizon'}
+                  </span>
                 </div>
                 <div className="text-[#F5F3FF] text-[11px] leading-relaxed line-clamp-3">
-                  "{user.alternateDirection}"
+                  {activeBranch.chosenDecision ? activeBranch.theme : `"${user.alternateDirection}"`}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* The Exact Turning Point Question */}
-          <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-2 text-xs text-[#9292A5]">
-            <GitFork className="w-4 h-4 text-[#A78BFA] shrink-0" />
-            <span>
-              The Turning Point: <strong className="text-[#F5F3FF] font-medium font-mono">"{user.decisionPrompt}"</strong>
-            </span>
+          {/* The Exact Turning Point Question & Second Choice Divergence */}
+          <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs text-[#9292A5]">
+            <div className="flex items-center gap-2">
+              <GitFork className="w-4 h-4 text-[#A78BFA] shrink-0" />
+              <span>
+                Origin Crossroads: <strong className="text-[#F5F3FF] font-medium font-mono">"{user.decisionPrompt}"</strong>
+              </span>
+            </div>
+
+            {activeBranch.chosenDecision && (
+              <div className="flex items-center gap-1.5 text-[#F4B978] font-mono text-[11px] bg-[#F4B978]/10 px-2.5 py-1 rounded-md border border-[#F4B978]/20">
+                <Sparkles className="w-3.5 h-3.5 text-[#F4B978]" />
+                <span>Active Branch Choice: <strong>"{activeBranch.chosenDecision.title}"</strong> (Age {activeBranch.branchCreationAge})</span>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Multiverse Branch Lineage & Navigation Bar */}
+        <BranchLineageBar
+          simulation={currentSim}
+          onSelectBranch={handleSelectBranch}
+        />
 
         {/* The Parallel Timeline Ledger (The Core Hero Feature) */}
         <div className="mb-16">
           <ParallelTimeline
             realityA={realityA}
-            realityB={realityB}
+            realityB={activeTimelineB}
             onSelectEvent={(evt) => setSelectedEvent(evt)}
             selectedEventId={selectedEvent?.id}
+            onOpenSecondChoice={handleOpenSecondChoice}
+            activeBranchLabel={activeBranch.name}
+            activeBranchAccentColor={activeBranch.colorAccent}
           />
         </div>
 
@@ -156,6 +233,15 @@ export const SimulationView: React.FC<SimulationViewProps> = ({
       <EventDetailDrawer
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}
+        onOpenSecondChoice={handleOpenSecondChoice}
+      />
+
+      {/* Second Choice Modal Dialog */}
+      <SecondChoiceModal
+        isOpen={!!secondChoiceEvent}
+        event={secondChoiceEvent}
+        onClose={() => setSecondChoiceEvent(null)}
+        onConfirmBranch={handleConfirmBranch}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { SimulationResult, OnboardingData } from '../engine/types';
+import { createRootBranch } from '../engine/branchEngine';
 
 const SIMULATION_STORAGE_KEY = 'the_other_choice_active_simulation_v2';
 const ONBOARDING_DRAFT_KEY = 'the_other_choice_onboarding_draft_v2';
@@ -34,6 +35,21 @@ export function loadSimulation(): SimulationResult | null {
       Array.isArray(parsed.realityA.events) &&
       Array.isArray(parsed.realityB.events)
     ) {
+      // Defensive migration: ensure branches and activeBranchId exist
+      if (!parsed.branches || typeof parsed.branches !== 'object' || Object.keys(parsed.branches).length === 0) {
+        const rootBranch = createRootBranch(parsed.realityB, parsed.user);
+        parsed.branches = {
+          [rootBranch.id]: rootBranch,
+        };
+        parsed.activeBranchId = rootBranch.id;
+      }
+
+      // Ensure activeBranchId is valid
+      if (!parsed.activeBranchId || !parsed.branches[parsed.activeBranchId]) {
+        const firstBranchKey = Object.keys(parsed.branches)[0] || 'root-b';
+        parsed.activeBranchId = firstBranchKey;
+      }
+
       return parsed as SimulationResult;
     }
     return null;

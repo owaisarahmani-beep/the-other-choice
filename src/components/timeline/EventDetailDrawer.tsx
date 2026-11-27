@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X, GitFork } from 'lucide-react';
 import { LifeEvent } from '../../engine/types';
 
 interface EventDetailDrawerProps {
   event: LifeEvent | null;
   onClose: () => void;
+  onOpenSecondChoice?: (event: LifeEvent) => void;
 }
 
-export const EventDetailDrawer: React.FC<EventDetailDrawerProps> = ({ event, onClose }) => {
+export const EventDetailDrawer: React.FC<EventDetailDrawerProps> = ({ event, onClose, onOpenSecondChoice }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -93,6 +94,39 @@ export const EventDetailDrawer: React.FC<EventDetailDrawerProps> = ({ event, onC
               {event.description}
             </p>
           </div>
+
+          {/* Divergence Origin Context (if event was created by a second choice) */}
+          {event.divergenceContext && (
+            <div className="p-4 rounded-xl bg-[#0c0d16] border border-[#F4B978]/30 space-y-1.5 text-xs font-mono">
+              <span className="text-[#F4B978] font-semibold block uppercase">Branch Origin Context:</span>
+              <p className="text-[#F5F3FF] leading-relaxed">{event.divergenceContext}</p>
+            </div>
+          )}
+
+          {/* The Second Choice Branching Action Banner */}
+          {event.branchDecisionPoint && (
+            <div className="p-4 sm:p-5 rounded-xl bg-[#1c1813] border border-[#F4B978]/40 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#F4B978] font-semibold uppercase tracking-wider">
+                <GitFork className="w-4 h-4 text-[#F4B978]" />
+                <span>The Second Choice Crossroads</span>
+              </div>
+              <p className="text-xs sm:text-sm text-[#F5F3FF] leading-relaxed">
+                A critical turning point arrives at age {event.branchDecisionPoint.age}: "{event.branchDecisionPoint.promptQuestion}". You can fork this alternate life into 3 divergent continuations.
+              </p>
+              {onOpenSecondChoice && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenSecondChoice(event);
+                  }}
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#F4B978] text-[#080910] hover:bg-[#ffc88b] active:scale-[0.98] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-[0_0_15px_rgba(244,185,120,0.2)]"
+                >
+                  <GitFork className="w-3.5 h-3.5" />
+                  <span>Explore 3 Choices & Fork Universe</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Alternate Universe Echo */}
           {event.parallelReflection && (

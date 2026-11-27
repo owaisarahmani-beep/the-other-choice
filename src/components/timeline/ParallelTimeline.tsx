@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { LifeTimeline, LifeEvent } from '../../engine/types';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, GitFork } from 'lucide-react';
 
 interface ParallelTimelineProps {
   realityA: LifeTimeline;
   realityB: LifeTimeline;
   onSelectEvent: (event: LifeEvent) => void;
   selectedEventId?: string;
+  onOpenSecondChoice?: (event: LifeEvent) => void;
+  activeBranchLabel?: string;
+  activeBranchAccentColor?: string;
 }
 
 /**
@@ -37,6 +40,9 @@ export const ParallelTimeline: React.FC<ParallelTimelineProps> = ({
   realityB,
   onSelectEvent,
   selectedEventId,
+  onOpenSecondChoice,
+  activeBranchLabel,
+  activeBranchAccentColor,
 }) => {
   const [activeFilter, setActiveFilter] = useState<'both' | 'reality-a' | 'reality-b'>('both');
   const [hoveredAge, setHoveredAge] = useState<number | null>(null);
@@ -69,10 +75,17 @@ export const ParallelTimeline: React.FC<ParallelTimelineProps> = ({
         </div>
 
         <div className="col-span-5 flex items-center justify-between">
-          <span className="text-[11px] text-[#F4B978]/70 font-mono">Alternate</span>
+          <span className="text-[11px] font-mono" style={{ color: `${activeBranchAccentColor || '#F4B978'}b3` }}>
+            Alternate
+          </span>
           <div className="flex items-center gap-2">
-            <span className="text-[#F4B978] font-semibold">Reality B // Alternate Orbit</span>
-            <span className="w-2 h-2 rounded-full bg-[#F4B978]" />
+            <span className="font-semibold" style={{ color: activeBranchAccentColor || '#F4B978' }}>
+              {activeBranchLabel || 'Reality B // Alternate Orbit'}
+            </span>
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: activeBranchAccentColor || '#F4B978' }}
+            />
           </div>
         </div>
       </div>
@@ -219,9 +232,17 @@ export const ParallelTimeline: React.FC<ParallelTimelineProps> = ({
                 >
                   {/* Category Header */}
                   <div className="flex items-center justify-between gap-2 mb-2 text-xs font-mono">
-                    <span className="text-[#F4B978]/80 uppercase tracking-wider font-medium">
+                    <span
+                      className="uppercase tracking-wider font-medium"
+                      style={{ color: `${activeBranchAccentColor || '#F4B978'}cc` }}
+                    >
                       {eventB.category}
                     </span>
+                    {eventB.divergenceContext && (
+                      <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#F4B978]/20 text-[#F4B978] font-mono uppercase tracking-wider">
+                        Branch Divergence
+                      </span>
+                    )}
                   </div>
 
                   {/* Title (Typography distinction for major turning point) */}
@@ -238,10 +259,29 @@ export const ParallelTimeline: React.FC<ParallelTimelineProps> = ({
                     {previewB}
                   </p>
 
-                  {/* Action Link */}
-                  <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-start gap-1 text-[11px] font-mono text-[#F4B978]/70 group-hover:text-[#F4B978] transition-colors">
-                    <span>Read chronicle</span>
-                    <ArrowUpRight className="w-3 h-3" />
+                  {/* Action Link & Second Choice Button */}
+                  <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between gap-2">
+                    {eventB.branchDecisionPoint && onOpenSecondChoice ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenSecondChoice(eventB);
+                        }}
+                        className="px-2 py-1 rounded bg-[#F4B978]/15 hover:bg-[#F4B978]/25 text-[#F4B978] border border-[#F4B978]/30 font-mono text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Make the Second Choice at this crossroads"
+                      >
+                        <GitFork className="w-3 h-3 text-[#F4B978]" />
+                        <span>Second Choice</span>
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+
+                    <div className="flex items-center justify-start gap-1 text-[11px] font-mono text-[#F4B978]/70 group-hover:text-[#F4B978] transition-colors">
+                      <span>Read chronicle</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -337,19 +377,41 @@ export const ParallelTimeline: React.FC<ParallelTimelineProps> = ({
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
                     <span className="text-[#F4B978] font-semibold flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#F4B978]" />
-                      Reality B
+                      {activeBranchLabel || 'Reality B'}
                     </span>
                     <span className="text-[#F4B978]/70 uppercase">{eventB.category}</span>
                   </div>
+                  {eventB.divergenceContext && (
+                    <div className="mb-2 text-[10px] font-mono text-[#F4B978] bg-[#F4B978]/10 px-2 py-0.5 rounded border border-[#F4B978]/20">
+                      Branch Divergence Point
+                    </div>
+                  )}
                   <h5 className={`font-heading text-[#F5F3FF] mb-1.5 ${isMajor ? 'text-base font-bold' : 'text-sm font-semibold'}`}>
                     {eventB.title}
                   </h5>
                   <p className="text-[13px] text-[#A5A5B8] leading-[1.6]">
                     {previewB}
                   </p>
-                  <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-start text-[11px] font-mono text-[#F4B978]/70">
-                    <span>Read chronicle</span>
-                    <ArrowUpRight className="w-3 h-3 ml-1" />
+                  <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between text-[11px] font-mono">
+                    {eventB.branchDecisionPoint && onOpenSecondChoice ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenSecondChoice(eventB);
+                        }}
+                        className="px-2 py-0.5 rounded bg-[#F4B978]/15 text-[#F4B978] border border-[#F4B978]/30 font-semibold flex items-center gap-1.5"
+                      >
+                        <GitFork className="w-3 h-3" />
+                        <span>Second Choice</span>
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+                    <div className="flex items-center text-[#F4B978]/70">
+                      <span>Read chronicle</span>
+                      <ArrowUpRight className="w-3 h-3 ml-1" />
+                    </div>
                   </div>
                 </div>
               )}

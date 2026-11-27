@@ -5,6 +5,7 @@ import {
   LifeEvent, 
   LifeSituation 
 } from './types';
+import { createRootBranch } from './branchEngine';
 
 /**
  * Human-readable situation labels
@@ -258,11 +259,17 @@ export function generateSimulation(data: OnboardingData): SimulationResult {
     },
   };
 
+  const rootBranch = createRootBranch(timelineB, data);
+
   return {
     id: `sim-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     user: data,
     realityA: timelineA,
     realityB: timelineB,
+    branches: {
+      [rootBranch.id]: rootBranch,
+    },
+    activeBranchId: rootBranch.id,
     createdAt: new Date().toISOString(),
     version: '2.0.0',
     disclaimer: 'This simulation is an imaginative creative thought experiment. It is not an algorithmic prediction of real life.',

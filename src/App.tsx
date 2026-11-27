@@ -76,6 +76,7 @@ export default function App(): React.JSX.Element {
           simulation={activeSimulation}
           onNewSimulation={handleOpenGateway}
           onExit={handleExitSimulation}
+          onSimulationUpdate={(updated) => setActiveSimulation(updated)}
         />
       ) : (
         /* Landing Page View */
